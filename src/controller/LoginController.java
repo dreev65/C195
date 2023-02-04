@@ -120,7 +120,7 @@ public class LoginController implements Initializable {
      * @param actionEvent switches scenes
      * @throws IOException ignore
      */
-    public void switchToDirectory(ActionEvent actionEvent) throws Exception {
+    public void switchToScheduler(ActionEvent actionEvent) throws Exception {
 
         String username = usernameBox.getText();
         String password = passwordBox.getText();
