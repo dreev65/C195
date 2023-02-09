@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import model.Appointments;
 import model.Customers;
 
 /**
@@ -51,20 +52,22 @@ public class DBCustomers {
     }
 
     /**
-     * Used to see if there are any appointments for a specific customer
+     * Used to see if there are any appointments for a specific customer. 
+     * Gets the deleted appointment information for the deleted appointment report
+     * 
      * @param id the customer id
-     * @return if there are any appointments
+     * @return a list of the appointments tied to a customer
      * @throws Exception ignore
      */
-    public static boolean checkForAppointments(int id) throws Exception {
+    public static ObservableList<Appointments> checkForAppointments(int id) throws Exception {
 
-        int appointmentID = -1;
-        boolean appointmentCheck = false;
+        ObservableList<Appointments> appointments = FXCollections.observableArrayList();
 
         try {
-            String sql = "SELECT customers.Customer_ID, appointments.Customer_ID, Appointment_ID\n"
+            String sql = "SELECT customers.Customer_ID, appointments.*\n"
                     + "FROM customers, appointments\n"
-                    + "WHERE customers.Customer_ID = ? && appointments.Customer_ID = ?";
+                    + "WHERE customers.Customer_ID = ? && appointments.Customer_ID = ?\n"
+                    + "ORDER BY Appointment_ID";
 
             PreparedStatement ps = JDBC.getConnection().prepareStatement(sql);
 
@@ -74,20 +77,59 @@ public class DBCustomers {
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
-                appointmentID = rs.getInt("Appointment_ID");
+                int apptID = rs.getInt("Appointment_ID");
+                String type = rs.getString("Type");
+                int custID = rs.getInt("Customer_ID");
+                int userID = rs.getInt("User_ID");
+                
+               Appointments A = new Appointments(apptID, userID, custID, type);
+               appointments.add(A);
             }
-
-            if (appointmentID == -1) {
-                appointmentCheck = true;
-            } else {
-                appointmentCheck = false;
-            }
+ 
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
 
-        return appointmentCheck;
+        return appointments;
     }
+    
+    /**
+     * Gets the deleted appointment information for the deleted appointment report
+     * @param id the appointment id
+     * @return the appointment 
+     * @throws SQLException ignore
+     */
+    public static ObservableList<Appointments> appointmentToAddToReport(int id) throws SQLException {
+        
+        ObservableList<Appointments> appointmentToAddToReport = FXCollections.observableArrayList();
+        
+        try {
+            String sql = "SELECT appointments.*"
+                   + "FROM appointments"
+                   + "WHERE appointments.Appointment_ID = ?";
+
+           PreparedStatement ps = JDBC.getConnection().prepareStatement(sql);
+           
+           ps.setInt(1, id);
+           ResultSet rs = ps.executeQuery();
+
+           while (rs.next()) {
+
+               //assigns variables with data from db for insertion into appointments observablelist//
+               int apptID = rs.getInt("Appointment_ID");
+               String type = rs.getString("Type");
+               int custID = rs.getInt("Customer_ID");
+               int userID = rs.getInt("User_ID");
+
+               Appointments A = new Appointments(apptID, userID, custID, type);
+               appointmentToAddToReport.add(A);
+           }
+       } catch (SQLException throwables) {
+           throwables.printStackTrace();
+       }
+       return appointmentToAddToReport;
+    }
+        
 
     /**
      * Used to delete the customer from the database

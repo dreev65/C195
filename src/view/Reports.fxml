@@ -22,23 +22,14 @@
                     <content>
                         <AnchorPane fx:id="appointmentsMonthTypePane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                             <children>
-                                <TableView fx:id="monthTypeTableView" layoutX="6.0" layoutY="6.0" maxWidth="550.0" prefHeight="560.0" prefWidth="550.0">
+                                <TableView fx:id="monthTypeTableView" layoutX="6.0" layoutY="6.0" maxWidth="600.0" prefHeight="560.0" prefWidth="600.0">
                                     <columns>
-                                        <TableColumn fx:id="monthTypeAppointmentIDCol" prefWidth="150.0" text="Appointment ID" />
-                                        <TableColumn fx:id="monthTypeTypeCol" prefWidth="200.0" text="Type" />
-                                        <TableColumn fx:id="monthTypeMonthCol" prefWidth="200.0" text="Month" />
+                                        <TableColumn fx:id="monthTypeMonthCol" prefWidth="150.0" text="Month" />
+                                        <TableColumn fx:id="monthTypeOnlineCol" prefWidth="150.0" text="Online" />
+                                        <TableColumn fx:id="monthTypeInPersonCol" prefWidth="150.0" text="In Person" />
+                              <TableColumn fx:id="monthTypePhoneCol" prefWidth="150.0" text="Phone" />
                                     </columns>
                                 </TableView>
-                                <Label layoutX="649.0" layoutY="122.0" text="Total Appointments:">
-                                    <font>
-                                        <Font name="System Bold" size="18.0" />
-                                    </font>
-                                </Label>
-                                <Label fx:id="totalAppointmentsLabel" layoutX="844.0" layoutY="122.0" prefHeight="27.0" prefWidth="50.0">
-                                    <font>
-                                        <Font size="18.0" />
-                                    </font>
-                                </Label>
                             </children>
                         </AnchorPane>
                     </content>

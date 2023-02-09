@@ -36,6 +36,7 @@ Directions:
 ##Delete Customer: 
 - Users must select a customer record from the table before clicking the "Delete Customer" buton
 - User will then be prompted to confirm the deletion of the customer
+- If appointments are tied to the customer, user will be prompted to delete those first
 - Once confirmed, user will be redirected to the customers window
 
 
@@ -79,21 +80,16 @@ Directions:
 
 
 
-
+--------------------------------------------------------------------------------------------------------------------
 #Reports:
 - In the reports window, the user can select the report they want to view by clicking the tab with the appropriate
 	label (reports are auto generated)
-- In order to multi-select filtering options, hold the shift key and click multiple column headers (should be used
-	in the "Contact Schedule" report in order to filter by the start time, end time, and contact and in 
-	"Appointments by Month/Type" to filter by the month and type)
+- "Contact Schedule" report is automatically filtered by the start datetime and contact name
+- "Appointments by Month/Type" is automatically filtered by start datetime and type
 
---------------------------------------------------------------------------------------------------------------------
-
-Additional Report: 
+##Additional Report: 
 
 - The additional report supplied shows a list of the deleted appointments with the appointmentID, userID, 
 	customerID, and appointment type
 - The report was created to keep track of the appointments being deleted with some detail as to whom deleted it 
 	and what appointment was deleted, within the current application session
-
-

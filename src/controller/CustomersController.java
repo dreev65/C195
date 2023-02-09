@@ -1,14 +1,17 @@
 package controller;
 
+import helper.DBAppointments;
 import model.DBClientApp;
 import helper.DBCustomers;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -22,7 +25,9 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
+import model.Appointments;
 import model.Customers;
+import model.Users;
 
 /**
  * FXML Controller for the customers table view scene
@@ -109,9 +114,10 @@ public class CustomersController implements Initializable {
     }
 
     /**
-     * Used to delete the selected customer from the both the table view and database. Checks if there are any appointments for the customer before deleting them.
+     * Used to delete the selected customer from the both the table view and database. Checks if there are any appointments for the customer before deleting the customer.
+     * If there are any appointments, they are automatically deleted.
      * 
-     * @param actionEvent deletes the customer
+     * @param actionEvent deletes the customer and any associated appointments
      * @throws SQLException ignore
      * @throws Exception ignore
      */
@@ -121,25 +127,49 @@ public class CustomersController implements Initializable {
             Customers selectedCustomer = customersTableView.getSelectionModel().getSelectedItem();
             String custName = selectedCustomer.getCustomerName();
             int custID = selectedCustomer.getCustomerID();
+            ObservableList<Appointments> appointments = DBCustomers.checkForAppointments(custID);
 
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Would you like to delete this customer?\n" + custName);
             Optional<ButtonType> result = alert.showAndWait();
-
-            boolean checkAppointment = DBCustomers.checkForAppointments(custID);
-            if (checkAppointment == true) {
-                if (result.get() == ButtonType.OK) {
+            if (result.get() == ButtonType.OK) {
+                if (appointments.isEmpty()){
                     DBCustomers.deleteDBCustomer(custID);
                     Alert alert2 = new Alert(Alert.AlertType.INFORMATION, "Customer deleted.");
                     alert2.showAndWait();
 
                     customersTableView.getItems().remove(customersTableView.getSelectionModel().getSelectedItem());
+                    
                 } else {
-                    Alert cancelAlert = new Alert(Alert.AlertType.INFORMATION, "Customer deletion was canceled.");
-                    cancelAlert.showAndWait();
+                    Alert appointmentAlert = new Alert(Alert.AlertType.CONFIRMATION, "Customer has appointments assigned to them.\nWould you like to delete all appointments first?");
+                    Optional<ButtonType> delete = appointmentAlert.showAndWait();
+                    if (delete.get() == ButtonType.OK) {
+                        for (int i = 0; i <= appointments.size()-1; i++){
+                            Appointments appointment = appointments.get(i);
+                            int apptID = appointment.getAppointmentID();
+                            int userID = Users.getUserID();
+                            String type = appointment.getType();   
+
+                            Appointments temp = new Appointments(apptID, userID, custID, type);
+                            Appointments.addDeletedAppointments(temp);
+
+                            DBAppointments.deleteDBAppointment(apptID);
+                            System.out.println("Appointment Deleted"); 
+                            }       
+
+                        DBCustomers.deleteDBCustomer(custID);
+                        Alert alert2 = new Alert(Alert.AlertType.INFORMATION, "Customer deleted.");
+                        alert2.showAndWait();
+
+                        customersTableView.getItems().remove(customersTableView.getSelectionModel().getSelectedItem());
+                    }
+                    else {
+                        Alert cancelAlert = new Alert(Alert.AlertType.INFORMATION, "Customer deletion was canceled.");
+                        cancelAlert.showAndWait();
+                    }
                 }
             } else {
-                Alert appointmentAlert = new Alert(Alert.AlertType.ERROR, "Customer has appointments assigned to them.\nThe appointment/appointments need to be deleted first.");
-                appointmentAlert.showAndWait();
+                Alert cancelAlert = new Alert(Alert.AlertType.INFORMATION, "Customer deletion was canceled.");
+                cancelAlert.showAndWait();
             }
         } else {
             Alert nonselectedAlert = new Alert(Alert.AlertType.INFORMATION, "No customer was selected. Please select a customer to delete them.");

@@ -32,7 +32,7 @@
         <TextField fx:id="addAppointmentDescriptionBox" layoutX="160.0" layoutY="216.0" />
         <TextField fx:id="addAppointmentLocationBox" layoutX="160.0" layoutY="256.0" />
         <ComboBox fx:id="addAppointmentContactBox" layoutX="160.0" layoutY="296.0" prefWidth="150.0" promptText="Select Contact" />
-        <TextField fx:id="addAppointmentTypeBox" layoutX="160.0" layoutY="336.0" />
+      <ComboBox fx:id="addAppointmentTypeBox" layoutX="159.0" layoutY="336.0" prefWidth="150.0" promptText="Select Type" />
         <DatePicker fx:id="addAppointmentStartDateBox" layoutX="160.0" layoutY="376.0" promptText="Select Start Date" />
         <ComboBox fx:id="addAppointmentStartTimeBox" layoutX="160.0" layoutY="416.0" prefWidth="150.0" promptText="Select Start Time" />
         <DatePicker fx:id="addAppointmentEndDateBox" layoutX="160.0" layoutY="456.0" promptText="Select End Date" />

@@ -7,7 +7,6 @@ import java.sql.SQLException;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Timestamp;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -48,7 +47,7 @@ public class UpdateAppointmentController implements Initializable {
     @FXML
     private ComboBox<String> updateAppointmentContact;
     @FXML
-    private TextField updateAppointmentType;
+    private ComboBox<String> updateAppointmentType;
     @FXML
     private DatePicker updateAppointmentStartDate;
     @FXML
@@ -77,7 +76,7 @@ public class UpdateAppointmentController implements Initializable {
         updateAppointmentTitle.setText(selectedAppointment.getTitle());
         updateAppointmentDescription.setText(selectedAppointment.getDescription());
         updateAppointmentLocation.setText(selectedAppointment.getLocation());
-        updateAppointmentType.setText(selectedAppointment.getType());
+        updateAppointmentType.setValue(selectedAppointment.getType());
         updateAppointmentCustomerID.setText(String.valueOf(selectedAppointment.getCustomerID()));
         updateAppointmentUserID.setText(String.valueOf(selectedAppointment.getUserID()));
         updateAppointmentContact.setValue(selectedAppointment.getContact());
@@ -124,7 +123,7 @@ public class UpdateAppointmentController implements Initializable {
     }
 
     /**
-     * Set the contacts box
+     * Set the appointment contacts combo box
      */
     public void setContactsComboBox() {
         DBAddAppointment.getAppointmentContacts();
@@ -133,9 +132,20 @@ public class UpdateAppointmentController implements Initializable {
             updateAppointmentContact.setItems(ContactsBox);
         }
     }
+    
+    /**
+     * Set the appointment types combo box
+     */
+    public void setTypesBox(){
+        ObservableList<String> types = FXCollections.observableArrayList();
+        types.add("Online");
+        types.add("In Person");
+        types.add("Phone");
+        updateAppointmentType.setItems(types);
+    }
 
     /**
-     * Disable past days and weekends in the DatePickers
+     * Disable past days in the DatePickers
      */
     public void disablePastDates(){
         updateAppointmentStartDate.setDayCellFactory(picker -> new DateCell() {
@@ -145,10 +155,6 @@ public class UpdateAppointmentController implements Initializable {
                 LocalDate today = LocalDate.now();
 
                 setDisable(empty || item.compareTo(today) < 0 );
-                
-                if (item.getDayOfWeek() == DayOfWeek.SATURDAY || item.getDayOfWeek() == DayOfWeek.SUNDAY){
-                    setDisable(true);
-                }
             }
         });
         updateAppointmentEndDate.setDayCellFactory(picker -> new DateCell() {
@@ -158,10 +164,6 @@ public class UpdateAppointmentController implements Initializable {
                 LocalDate today = LocalDate.now();
 
                 setDisable(empty || item.compareTo(today) < 0 );
-                
-                if (item.getDayOfWeek() == DayOfWeek.SATURDAY || item.getDayOfWeek() == DayOfWeek.SUNDAY){
-                    setDisable(true);
-                }
             }
         });
     }
@@ -174,10 +176,22 @@ public class UpdateAppointmentController implements Initializable {
      * @throws Exception ignore
      */
     public void saveButton(ActionEvent actionEvent) throws IOException, Exception {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Would you like to save this appointment?");
+        Optional<ButtonType> option = alert.showAndWait();
+        if (option.get() == ButtonType.OK) {
+            if (updateAppointmentTitle.getText().isEmpty() || updateAppointmentDescription.getText().isEmpty() || updateAppointmentLocation.getText().isEmpty()
+                    || updateAppointmentType.getValue().isEmpty() || updateAppointmentStartDate.getValue() == null || updateAppointmentStartTime.getSelectionModel().isEmpty()
+                    || updateAppointmentEndDate.getValue() == null || updateAppointmentEndTime.getSelectionModel().isEmpty() || updateAppointmentCustomerID.getText().isEmpty()
+                    || updateAppointmentContact.getSelectionModel().isEmpty() || updateAppointmentUserID.getText().isEmpty()) {
+
+                Alert emptyAlert = new Alert(Alert.AlertType.ERROR, "Not all fields have been filled.\nPlease check entries.");
+                emptyAlert.showAndWait();
+            }
+            
         String title = updateAppointmentTitle.getText();
         String description = updateAppointmentDescription.getText();
         String location = updateAppointmentLocation.getText();
-        String type = updateAppointmentType.getText();
+        String type = updateAppointmentType.getValue();
         String custID = updateAppointmentCustomerID.getText();
         String userID = updateAppointmentUserID.getText();
         
@@ -194,21 +208,8 @@ public class UpdateAppointmentController implements Initializable {
         boolean validAppointment = AddAppointmentController.checkAppointmentTime(localStart, localEnd);
         boolean overlappingApp = AddAppointmentController.checkOverlappingAppointments(Integer.valueOf(custID), localStart, localEnd); 
         
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Would you like to save this appointment?");
-        Optional<ButtonType> option = alert.showAndWait();
-
-        if (option.get() == ButtonType.OK) {
-            if (updateAppointmentContact.getSelectionModel().isEmpty()) {
-                Alert contactAlert = new Alert(Alert.AlertType.ERROR, "A contact has not been selected.");
-                contactAlert.showAndWait();
-            } else if (updateAppointmentTitle.getText().isEmpty() || updateAppointmentDescription.getText().isEmpty() || updateAppointmentLocation.getText().isEmpty()
-                    || updateAppointmentType.getText().isEmpty() || updateAppointmentStartDate.getValue() == null || updateAppointmentStartTime.getSelectionModel().isEmpty()
-                    || updateAppointmentEndDate.getValue() == null || updateAppointmentEndTime.getSelectionModel().isEmpty() || updateAppointmentCustomerID.getText().isEmpty()
-                    || updateAppointmentUserID.getText().isEmpty()) {
-
-                Alert emptyAlert = new Alert(Alert.AlertType.ERROR, "Not all fields have been filled.\nPlease check entries.");
-                emptyAlert.showAndWait();
-            } else if (validAppointment == false) {
+ 
+            if (validAppointment == false) {
                 Alert validAppointmentAlert = new Alert(Alert.AlertType.ERROR, "Appointment time is invalid.\nPlease check the time entered.\n"
                             + "EST business hours are 8:00am to 10:00pm.");
                     validAppointmentAlert.showAndWait();
@@ -269,6 +270,7 @@ public class UpdateAppointmentController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         setContactsComboBox();
+        setTypesBox();
         fillStartTimesList();
         disablePastDates();
     }

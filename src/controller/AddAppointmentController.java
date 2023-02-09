@@ -50,7 +50,7 @@ public class AddAppointmentController implements Initializable {
     @FXML
     private ComboBox<String> addAppointmentContactBox;
     @FXML
-    private TextField addAppointmentTypeBox;
+    private ComboBox<String> addAppointmentTypeBox;
     @FXML
     private DatePicker addAppointmentStartDateBox;
     @FXML
@@ -65,7 +65,7 @@ public class AddAppointmentController implements Initializable {
     private TextField addAppointmentUserIDBox;
 
     /**
-     * Set the contacts box
+     * Set the appointment contacts combo box
      */
     public void setContactsComboBox() {
         DBAddAppointment.getAppointmentContacts();
@@ -73,6 +73,17 @@ public class AddAppointmentController implements Initializable {
         for (String Contact : ContactsBox) {
             addAppointmentContactBox.setItems(ContactsBox);
         }
+    }
+    
+    /**
+     * Set the appointment types combo box
+     */
+    public void setTypesBox(){
+        ObservableList<String> types = FXCollections.observableArrayList();
+        types.add("Online");
+        types.add("In Person");
+        types.add("On Phone");
+        addAppointmentTypeBox.setItems(types);
     }
 
     /**
@@ -156,7 +167,7 @@ public class AddAppointmentController implements Initializable {
     
 
     /**
-     * Disable past days and weekends in the DatePickers
+     * Disable past days in the DatePickers
      */
     public void disablePastDates(){
         addAppointmentStartDateBox.setDayCellFactory(picker -> new DateCell() {
@@ -166,10 +177,6 @@ public class AddAppointmentController implements Initializable {
                 LocalDate today = LocalDate.now();
 
                 setDisable(empty || item.compareTo(today) < 0);
-                
-                if (item.getDayOfWeek() == DayOfWeek.SATURDAY || item.getDayOfWeek() == DayOfWeek.SUNDAY){
-                    setDisable(true);
-                }
             }
         });
         addAppointmentEndDateBox.setDayCellFactory(picker -> new DateCell() {
@@ -178,11 +185,7 @@ public class AddAppointmentController implements Initializable {
                 super.updateItem(item, empty);
                 LocalDate today = LocalDate.now();
 
-                setDisable(empty || item.compareTo(today) < 0 );
-                
-                if (item.getDayOfWeek() == DayOfWeek.SATURDAY || item.getDayOfWeek() == DayOfWeek.SUNDAY){
-                    setDisable(true);
-                }
+                setDisable(empty || item.compareTo(today) < 0);
             }
         });
     }
@@ -195,21 +198,22 @@ public class AddAppointmentController implements Initializable {
      * @throws Exception ignore
      */
     public void saveButton(ActionEvent actionEvent) throws IOException, Exception {
-        try {
-            
+        try {    
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Would you like to save this appointment?");
+            Optional<ButtonType> option = alert.showAndWait();
+            if (option.get() == ButtonType.OK) {
+                if (addAppointmentTitleBox.getText().isEmpty() || addAppointmentDescriptionBox.getText().isEmpty() || addAppointmentLocationBox.getText().isEmpty()
+                        || addAppointmentTypeBox.getSelectionModel().isEmpty() || addAppointmentStartDateBox.getValue() == null || addAppointmentStartTimeBox.getSelectionModel().isEmpty() 
+                        || addAppointmentEndDateBox.getValue() == null || addAppointmentEndTimeBox.getSelectionModel().isEmpty() || addAppointmentCustomerIDBox.getText().isEmpty()
+                        || addAppointmentUserIDBox.getText().isEmpty()) {
+
+                    Alert emptyAlert = new Alert(Alert.AlertType.ERROR, "Not all fields have been filled.\nPlease check entries.");
+                    emptyAlert.showAndWait();
+                    return;
+                }
+                
             int customerID = Integer.valueOf(addAppointmentCustomerIDBox.getText());
             int userID = Integer.valueOf(addAppointmentUserIDBox.getText());
-            String appointmentTitle = addAppointmentTitleBox.getText();
-            String appointmentDescription = addAppointmentDescriptionBox.getText();
-            String appointmentLocation = addAppointmentLocationBox.getText();
-            addAppointmentContactBox.getSelectionModel();
-            String appointmentType = addAppointmentTypeBox.getText();
-            addAppointmentStartDateBox.getValue();
-            addAppointmentStartTimeBox.getSelectionModel();
-            addAppointmentEndDateBox.getValue();
-            addAppointmentEndTimeBox.getSelectionModel();
-            String appointmentCustomerID = addAppointmentCustomerIDBox.getText();
-            String appointmentUserID = addAppointmentUserIDBox.getText();
             
             //get start and end time in local time (user input)
             LocalDate localStartDate = addAppointmentStartDateBox.getValue(); //returns date value without time
@@ -224,23 +228,13 @@ public class AddAppointmentController implements Initializable {
             //calls the appointement timing checks
             boolean validAppointment = checkAppointmentTime(localStart, localEnd);
             boolean overlappingApp = checkOverlappingAppointments(customerID, localStart, localEnd);
-            
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Would you like to save this appointment?");
-            Optional<ButtonType> option = alert.showAndWait();
 
-            if (option.get() == ButtonType.OK) {
-                if (addAppointmentContactBox.getSelectionModel().isEmpty()) {
-                    Alert countryAlert = new Alert(Alert.AlertType.ERROR, "A contact has not been selected.");
-                    countryAlert.showAndWait();
-                } else if (appointmentTitle.isEmpty() || appointmentDescription.isEmpty() || appointmentLocation.isEmpty() || appointmentType.isEmpty()
-                        || addAppointmentStartDateBox.getValue() == null || addAppointmentStartTimeBox.getSelectionModel().isEmpty() || addAppointmentEndDateBox.getValue() == null
-                        || addAppointmentEndTimeBox.getSelectionModel().isEmpty() || appointmentCustomerID.isEmpty() || appointmentUserID.isEmpty()) {
-
-                    Alert emptyAlert = new Alert(Alert.AlertType.ERROR, "Not all fields have been filled.\nPlease check entries.");
-                    emptyAlert.showAndWait();
-                } else if (validAppointment == false) {
-                    Alert validAppointmentAlert = new Alert(Alert.AlertType.ERROR, "Appointment time is invalid.\nPlease check the time entered.\n"
-                            + "EST business hours are 8:00am to 10:00pm.");
+                
+                if (validAppointment == false) {
+                    Alert validAppointmentAlert = new Alert(Alert.AlertType.ERROR, """
+                                                                                   Appointment time is invalid.
+                                                                                   Please check the time entered.
+                                                                                   EST business hours are 8:00am to 10:00pm.""");
                     validAppointmentAlert.showAndWait();
                 } else if (overlappingApp == true) {
                     Alert overlappingAppointmentAlert = new Alert(Alert.AlertType.ERROR, "Customer has other appointments at this time.\nPlease check the date and time entered.\n");
@@ -256,7 +250,7 @@ public class AddAppointmentController implements Initializable {
                         ps.setString(1, addAppointmentTitleBox.getText());
                         ps.setString(2, addAppointmentDescriptionBox.getText());
                         ps.setString(3, addAppointmentLocationBox.getText());
-                        ps.setString(4, addAppointmentTypeBox.getText());
+                        ps.setString(4, addAppointmentTypeBox.getValue());
                         ps.setTimestamp(5, Timestamp.valueOf(localStart));
                         ps.setTimestamp(6, Timestamp.valueOf(localEnd));
                         ps.setString(7, Users.getUsername());
@@ -303,6 +297,7 @@ public class AddAppointmentController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         setContactsComboBox();
+        setTypesBox();
         fillStartTimesList();
         disablePastDates();
         

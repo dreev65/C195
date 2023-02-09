@@ -72,19 +72,6 @@ public class Appointments {
     }
 
     /**
-     * Used for the MonthType report
-     *
-     * @param appointmentID the appointment id
-     * @param type the appointment type
-     * @param startTime the appointment start time and date
-     */
-    public Appointments(int appointmentID, String type, LocalDateTime startTime) {
-        this.appointmentID = appointmentID;
-        this.type = type;
-        this.startTime = startTime;
-    }
-
-    /**
      * Used when deleting a customer
      *
      * @param appointmentID the appointment id
