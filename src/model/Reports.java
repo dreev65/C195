@@ -4,7 +4,7 @@ package model;
 import java.time.LocalDateTime;
 
 /**
- *
+ * Reports class used to store the report data
  * @author Daniel Reeve
  */
 public class Reports {
