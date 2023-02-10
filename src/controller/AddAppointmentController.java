@@ -7,7 +7,6 @@ import java.net.URL;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -108,7 +107,7 @@ public class AddAppointmentController implements Initializable {
     }
     
     /**
-     * Checks if the selected appointment time is within business hours
+     * Checks if the selected appointment time is within EST business hours
      * 
      * @param localStart start time of the appointment
      * @param localEnd end time of the appointment
@@ -118,8 +117,11 @@ public class AddAppointmentController implements Initializable {
         boolean validAppointment = false;
         
         //convert to eastern time zone
-        ZonedDateTime easternStart = localStart.atZone(ZoneId.of("US/Eastern"));
-        ZonedDateTime easternEnd = localEnd.atZone(ZoneId.of("US/Eastern"));
+        ZoneId zoneID = ZoneId.systemDefault();
+        ZonedDateTime lStart = localStart.atZone(zoneID);
+        ZonedDateTime lEnd = localEnd.atZone(zoneID);
+        ZonedDateTime easternStart = lStart.withZoneSameInstant(ZoneId.of("US/Eastern"));
+        ZonedDateTime easternEnd = lEnd.withZoneSameInstant(ZoneId.of("US/Eastern"));
         
         //get the time from the eastern time conversion
         LocalTime start = easternStart.toLocalTime();
@@ -144,18 +146,18 @@ public class AddAppointmentController implements Initializable {
      * @return if there is an overlapping appointment
      * @throws Exception ignore
      */
-    public static boolean checkOverlappingAppointments(int id, LocalDateTime localStart, LocalDateTime localEnd) throws Exception{
+    public boolean checkOverlappingAppointments(int id, LocalDateTime localStart, LocalDateTime localEnd) throws Exception{
         boolean overlappingAppointment = false;
-        
+      
         List<LocalDateTime[]> list = DBAddAppointment.getCustomerAppointments(id);
-        
+
         LocalDateTime start = localStart;
         LocalDateTime end = localEnd;
-                
+
         for (LocalDateTime[] arr : list) {
             LocalDateTime appStart = arr[0];
             LocalDateTime appEnd = arr[1];
-            
+
             if (start.isEqual(appStart) || end.isEqual(appEnd) || start.isAfter(appStart) && start.isBefore(appEnd)){
                 overlappingAppointment = true;
                 System.out.println("Overlapping appointments");
@@ -165,7 +167,6 @@ public class AddAppointmentController implements Initializable {
         return overlappingAppointment;
     }
     
-
     /**
      * Disable past days in the DatePickers
      */
@@ -212,23 +213,22 @@ public class AddAppointmentController implements Initializable {
                     return;
                 }
                 
-            int customerID = Integer.valueOf(addAppointmentCustomerIDBox.getText());
-            int userID = Integer.valueOf(addAppointmentUserIDBox.getText());
-            
-            //get start and end time in local time (user input)
-            LocalDate localStartDate = addAppointmentStartDateBox.getValue(); //returns date value without time
-            LocalDate localEndDate = addAppointmentEndDateBox.getValue(); //returns date value without time
-            LocalTime localStartTime = addAppointmentStartTimeBox.getSelectionModel().getSelectedItem();
-            LocalTime localEndTime = addAppointmentEndTimeBox.getSelectionModel().getSelectedItem();
+                int customerID = Integer.valueOf(addAppointmentCustomerIDBox.getText());
+                int userID = Integer.valueOf(addAppointmentUserIDBox.getText());
 
-            //combine date and start/end times together       
-            LocalDateTime localStart = LocalDateTime.of(localStartDate, localStartTime);
-            LocalDateTime localEnd = LocalDateTime.of(localEndDate, localEndTime);
-            
-            //calls the appointement timing checks
-            boolean validAppointment = checkAppointmentTime(localStart, localEnd);
-            boolean overlappingApp = checkOverlappingAppointments(customerID, localStart, localEnd);
+                //get start and end time in local time (user input)
+                LocalDate localStartDate = addAppointmentStartDateBox.getValue(); //returns date value without time
+                LocalDate localEndDate = addAppointmentEndDateBox.getValue(); //returns date value without time
+                LocalTime localStartTime = addAppointmentStartTimeBox.getSelectionModel().getSelectedItem();
+                LocalTime localEndTime = addAppointmentEndTimeBox.getSelectionModel().getSelectedItem();
 
+                //combine date and start/end times together       
+                LocalDateTime localStart = LocalDateTime.of(localStartDate, localStartTime);
+                LocalDateTime localEnd = LocalDateTime.of(localEndDate, localEndTime);
+
+                //calls the appointement timing checks
+                boolean validAppointment = checkAppointmentTime(localStart, localEnd);
+                boolean overlappingApp = checkOverlappingAppointments(customerID, localStart, localEnd);
                 
                 if (validAppointment == false) {
                     Alert validAppointmentAlert = new Alert(Alert.AlertType.ERROR, """
@@ -271,7 +271,11 @@ public class AddAppointmentController implements Initializable {
                     stage.setScene(scene);
                     stage.show();
                 }
+            } else {
+                Alert cancelAlert = new Alert(Alert.AlertType.INFORMATION, "Save appointment canceled.");
+                cancelAlert.showAndWait();
             }
+            
         } catch (NumberFormatException e) {
             //Ignore
         }
@@ -300,6 +304,5 @@ public class AddAppointmentController implements Initializable {
         setTypesBox();
         fillStartTimesList();
         disablePastDates();
-        
     }
 }

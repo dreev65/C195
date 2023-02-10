@@ -129,7 +129,7 @@ public class CustomersController implements Initializable {
             int custID = selectedCustomer.getCustomerID();
             ObservableList<Appointments> appointments = DBCustomers.checkForAppointments(custID);
 
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Would you like to delete this customer?\n" + custName);
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Would you like to delete this customer?\nCustomer Name: " + custName + "\nCustomer ID: " + custID);
             Optional<ButtonType> result = alert.showAndWait();
             if (result.get() == ButtonType.OK) {
                 if (appointments.isEmpty()){

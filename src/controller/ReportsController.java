@@ -291,7 +291,7 @@ public class ReportsController implements Initializable {
             monthString = "AUGUST";
         }
         if (m == 8) {
-            monthString = "SEPTEMPBER";
+            monthString = "SEPTEMBER";
         }
         if (m == 9) {
             monthString = "OCTOBER";

@@ -14,7 +14,7 @@ import javafx.stage.Stage;
  * The main class of the program.<br>
  * 
  * <b>The README.txt and login_activity.txt are located in the main folder of the project.</b><br>
- * <b>The JavaDocs are located in the dist folder > javodoc folder > index.html.</b>
+ * <b>The JavaDocs are located in the javadoc folder > index.html.</b>
  * 
  * @author Daniel Reeve
  */

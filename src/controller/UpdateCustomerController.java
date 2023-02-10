@@ -184,6 +184,9 @@ public class UpdateCustomerController implements Initializable {
                 stage.setScene(scene);
                 stage.show();
             }
+        } else {
+            Alert cancelAlert = new Alert(Alert.AlertType.INFORMATION, "Save customer canceled.");
+            cancelAlert.showAndWait();
         }
     }
 

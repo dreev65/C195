@@ -168,6 +168,9 @@ public class AddCustomerController implements Initializable {
                     stage.setScene(scene);
                     stage.show();
                 }
+            } else {
+                Alert cancelAlert = new Alert(Alert.AlertType.INFORMATION, "Save appointment canceled.");
+                cancelAlert.showAndWait();
             }
         } catch (NumberFormatException e) {
             //Ignore
@@ -191,7 +194,8 @@ public class AddCustomerController implements Initializable {
     /**
      * Initializes the controller class
      * <br><br>
-     * Lambda expression calls the setDivisionComboBoc function if the user selects a country. A lambda function was used because it efficiently handles an event call, 
+     * Lambda expression calls the setDivisionComboBoc function if the user selects a country. 
+     * A lambda function was used because it efficiently handles an event call, 
      * which is what is occurring when the country is selected.
      */
     @Override

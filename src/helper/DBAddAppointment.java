@@ -3,6 +3,7 @@ package helper;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -85,7 +86,7 @@ public class DBAddAppointment {
      */
     public static List<LocalDateTime[]> getCustomerAppointments(int customerID) throws SQLException, Exception {
         
-        List<LocalDateTime[]> list = new ArrayList<LocalDateTime[]>();
+        List<LocalDateTime[]> list = new ArrayList<>();
         
         try {
             String sql = "SELECT * FROM appointments WHERE Customer_ID = ?";
@@ -100,6 +101,38 @@ public class DBAddAppointment {
                 LocalDateTime end = rs.getTimestamp("End").toLocalDateTime();
                 
                 LocalDateTime[] arr = {start, end};
+                
+                list.add(arr);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return list;
+    }
+    
+    public static List<String[]> getCustomerAppointmentsForUpdate(int customerID) throws SQLException, Exception {
+        
+        List<String[]> list = new ArrayList<>();
+        
+        try {
+            String sql = "SELECT * FROM appointments "
+                       + "WHERE Customer_ID = ?";
+            PreparedStatement ps = JDBC.getConnection().prepareStatement(sql);
+            
+            ps.setInt(1, customerID);
+            
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                String ID = rs.getString("Appointment_ID");
+                LocalDateTime localStart = rs.getTimestamp("Start").toLocalDateTime();
+                LocalDateTime localEnd = rs.getTimestamp("End").toLocalDateTime();
+                
+                String start = String.valueOf(localStart);
+                String end = String.valueOf(localEnd);
+                
+                
+                String[] arr = {ID, start, end};
                 
                 list.add(arr);
             }
