@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Timestamp;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -178,7 +179,7 @@ public class UpdateAppointmentController implements Initializable {
     }
 
     /**
-     * Disable past days in the DatePickers
+     * Disable past days and weekends in the DatePickers
      */
     public void disablePastDates(){
         updateAppointmentStartDate.setDayCellFactory(picker -> new DateCell() {
@@ -188,6 +189,10 @@ public class UpdateAppointmentController implements Initializable {
                 LocalDate today = LocalDate.now();
 
                 setDisable(empty || item.compareTo(today) < 0 );
+                
+                if (item.getDayOfWeek() == DayOfWeek.SATURDAY || item.getDayOfWeek() == DayOfWeek.SUNDAY){
+                    setDisable(true);
+                }
             }
         });
         updateAppointmentEndDate.setDayCellFactory(picker -> new DateCell() {
@@ -197,6 +202,10 @@ public class UpdateAppointmentController implements Initializable {
                 LocalDate today = LocalDate.now();
 
                 setDisable(empty || item.compareTo(today) < 0 );
+                
+                if (item.getDayOfWeek() == DayOfWeek.SATURDAY || item.getDayOfWeek() == DayOfWeek.SUNDAY){
+                    setDisable(true);
+                }
             }
         });
     }

@@ -76,7 +76,7 @@ public class ReportsController implements Initializable {
     private TableColumn deletedTypeCol;
     @FXML
     private TableColumn deletedAppointmentsIDCol;  
-
+    
     /**
      * Initializes an array to store the MonthType report data
      */
@@ -104,6 +104,10 @@ public class ReportsController implements Initializable {
         ObservableList<Reports> typesByMonthOL = FXCollections.observableArrayList();
         ObservableList<Reports> appointments = DBReports.getMonthTypeData();
         
+        for (int index = 0; index < monthTypes.length; index++) {
+            monthTypes[index] = null;
+        }
+        monthTypes = null;
         
         for(int i = 0; i < appointments.size(); i++) {
             
@@ -313,7 +317,6 @@ public class ReportsController implements Initializable {
      * @throws IOException ignore
      */
     public void backToDirectory(ActionEvent actionEvent) throws IOException {
-
         Parent root = FXMLLoader.load(getClass().getResource("/view/ApplicationDirectory.fxml"));
         Stage stage = (Stage) ((Button) actionEvent.getSource()).getScene().getWindow();
         Scene scene = new Scene(root);
