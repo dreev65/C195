@@ -179,7 +179,7 @@ public class UpdateAppointmentController implements Initializable {
     }
 
     /**
-     * Disable past days and weekends in the DatePickers
+     * Disable past days in the DatePickers
      */
     public void disablePastDates(){
         updateAppointmentStartDate.setDayCellFactory(picker -> new DateCell() {
@@ -189,10 +189,6 @@ public class UpdateAppointmentController implements Initializable {
                 LocalDate today = LocalDate.now();
 
                 setDisable(empty || item.compareTo(today) < 0 );
-                
-                if (item.getDayOfWeek() == DayOfWeek.SATURDAY || item.getDayOfWeek() == DayOfWeek.SUNDAY){
-                    setDisable(true);
-                }
             }
         });
         updateAppointmentEndDate.setDayCellFactory(picker -> new DateCell() {
@@ -201,11 +197,7 @@ public class UpdateAppointmentController implements Initializable {
                 super.updateItem(item, empty);
                 LocalDate today = LocalDate.now();
 
-                setDisable(empty || item.compareTo(today) < 0 );
-                
-                if (item.getDayOfWeek() == DayOfWeek.SATURDAY || item.getDayOfWeek() == DayOfWeek.SUNDAY){
-                    setDisable(true);
-                }
+                setDisable(empty || item.compareTo(today) < 0 ); 
             }
         });
     }
