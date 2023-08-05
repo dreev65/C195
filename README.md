@@ -8,7 +8,7 @@
 
 ## Application Specifications:
 
-- IDE Product Version: Apache NetBeans IDE 14
+- IDE Product Version: JetBrains Intellij
 - JDK Version: Java SE 17.0.4
 - JavaFX Version: JavaFX-SDK-17.0.1
 - MySQL Connector Version: mysql-connector-java-8.0.31
