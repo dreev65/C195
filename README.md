@@ -19,15 +19,20 @@
 
 - Opon running the application user will be prompted to login in. Upon successful login, user will be directed to 
 	the directory page
+
+<img src="images/C195_Login.jpg" title="Login Screen">
+
 - From the directory page, the user can click one of the buttons on screen to access the customers list, 
 	appointments list, or reports
 
-
+<img src="images/C195_Application_Directory.jpg" title="Application Directory">
 
 
 # Customers:
 - Once on the customers page, the user can view the customer list in the table, delete customers, add new customers,
 	or update existing customers
+
+<img src="images/C195_Customers.jpg" title="Customers Screen">
 
 ## Delete Customer: 
 - Users must select a customer record from the table before clicking the "Delete Customer" buton
@@ -42,6 +47,8 @@
 - Customer creation can be canceled by click the cancel button at anytime (user will then be redirected back to 
 	customers window)
 
+<img src="images/C195_Add_Customer.jpg" title="Add Customer">
+
 ## Update Customer:
 - Users must select a customer record from the table before clicking the "Update Customer" button
 - Users must enter data in all given fields before clicking the save button in order to update selected customer
@@ -49,12 +56,15 @@
 - Customer update can be canceled by click the cancel button at anytime (user will then be redirected back to 
 	customers window)
 
-
+<img src="images/C195_Update_Customer.jpg" title="Update Customer">
 
 
 # Appointments:
 - Once on the customers page, the user can view the customer list in the table, delete customers, add new customers,
 	or update existing customers
+
+<img src="images/C195_Appointments.jpg" title="Appointments Screen">
+
 
 ## Delete Appointment:
 - Users must select an appointment record before clicking the "Delete Appointment" button
@@ -67,6 +77,8 @@
 - Appointment creation can be canceled by click the cancel button at anytime (user will then be redirected back to 
 	appointments window)
 
+<img src="images/C195_Add_Appointment.jpg" title="Add Appointment">
+
 ## Update Appointment:
 - Users must select an appointment record before clicking the "Update Appointment" button
 - Users must enter data in all given fields before clicking the save button in order to update selected appointment
@@ -74,6 +86,7 @@
 - Appointment update can be canceled by click the cancel button at anytime (user will then be redirected back to 
 	appointments window)
 
+<img src="images/C195_Update_Appointment.jpg" title="Update Appointment">
 
 
 --------------------------------------------------------------------------------------------------------------------
